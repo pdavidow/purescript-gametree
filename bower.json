@@ -1,0 +1,22 @@
+{
+  "name": "purescript-gametree",
+  "authors": [
+    "David Peter <mail@david-peter.de>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "output",
+    "test"
+  ],
+  "dependencies": {
+    "purescript-lists": "^0.7.10",
+    "purescript-foldable-traversable": "^0.4.2",
+    "purescript-orders": "^0.1.1",
+    "purescript-nonempty": "^0.2.0"
+  },
+  "devDependencies": {
+    "purescript-test-unit": "^4.1.0"
+  }
+}
