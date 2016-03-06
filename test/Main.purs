@@ -2,13 +2,14 @@ module Test.Main where
 
 import Prelude
 
-import Data.List ((..))
+import Data.List (List(..), (..), (:))
+import Data.NonEmpty ((:|))
 import Data.Ord (min)
 
 import Data.GameTree (class Node, Score(..), minmax)
 
 import Test.Unit (test, runTest)
-import Test.Unit.Assert (equal)
+import Test.Unit.Assert (assert, equal)
 
 -- | 'Coins' is a simple game with a stack coins. On their turn, players have
 -- | to take between one and three coins from the stack. The player who takes
@@ -49,3 +50,11 @@ main = do
       equal Win  (result 3)
       equal Win  (result 4)
       equal Lose (result 5)
+
+      let pv = (minmax 1000 (CoinsState Alice 4)).principalVariation
+
+      assert "should find optimal strategy" $
+        pv == CoinsState Alice 4 :|
+              CoinsState Bob   1 :
+              CoinsState Alice 0 :
+              Nil
