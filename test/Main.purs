@@ -25,7 +25,7 @@ data CoinsState = CoinsState Player Int
 
 derive instance eqCoinsState :: Eq CoinsState
 
-instance nodeGameState :: Node CoinsState where
+instance nodeCoinsState :: Node CoinsState where
     isTerminal (CoinsState _ n) = n == 0
 
     -- In this case, it is sufficient to only define the score at the terminal

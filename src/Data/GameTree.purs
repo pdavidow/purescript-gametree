@@ -1,7 +1,7 @@
 -- | This module defines a type class for nodes in a tree of game states
 -- | (two-player zero-sum games) and provides algorithms to search the game
 -- | trees for optimal strategies.
--- |
+
 module Data.GameTree
   ( Score(..)
   , Plies
