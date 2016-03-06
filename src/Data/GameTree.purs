@@ -101,7 +101,7 @@ minmax plies rootNode = go plies true rootNode
 -- |
 -- | Example: 3-ply minmax:
 -- | ``` purs
--- | bestMove rootNode (minmax 3)
+-- | bestMove (minmax 3) rootNode
 -- | ```
-bestMove :: ∀ a. Node a => a -> (a -> Result a) -> Maybe a
-bestMove rootNode search = List.head (tail (search rootNode).principalVariation)
+bestMove :: ∀ a. Node a => (a -> Result a) -> a -> Maybe a
+bestMove search rootNode = List.head (tail (search rootNode).principalVariation)
