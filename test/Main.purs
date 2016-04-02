@@ -102,7 +102,14 @@ main = runTest do
   test "Score" do
     assert "Win should be the maximum value" (Win > Score 3.0)
     assert "Win should be the maximum value" (Win > Lose)
-    assert "Lose should be the minimum value" (Score 3.0 > Lose)
+    assert "Lose should be the minimum value" (Score (-100.0) > Lose)
+    assert "higher numbers should result in higher scores" (Score 3.0 > Score 2.4)
+    assert "Eq instance should be reflexive" (Win == Win)
+    assert "Eq instance should be reflexive" (Lose == Lose)
+    assert "Eq instance should be reflexive" (Score 3.0 == Score 3.0)
+    assert "Ord instance should be reflexive" (Win <= Win)
+    assert "Ord instance should be reflexive" (Lose <= Lose)
+    assert "Ord instance should be reflexive" (Score 3.0 <= Score 3.0)
 
   test "minmax" do
     -- Coins game

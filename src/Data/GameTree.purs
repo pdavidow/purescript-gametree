@@ -31,18 +31,18 @@ consNonEmpty x (NonEmpty y ys) = NonEmpty x (y : ys)
 
 infixr 5 consNonEmpty as <:>
 
--- | The (heuristic) value of a node in the game tree. `Win` and `Lose` can be
--- | thought of as *+infinity* and *-infinity*.
-data Score = Win | Lose | Score Number
+-- | The (heuristic) value of a node in the game tree. `Lose` and `Win` can
+-- | be thought of as *-infinity* and *+infinity*.
+-- |
+-- | Mathematically, `Score` is analogous to the extended real number line,
+-- | which is a totally ordered set (see `Ord` instance). `Score` is not a
+-- | `Semiring`, but supports negation (`negateScore`).
+-- |
+-- | See: https://en.wikipedia.org/wiki/Extended_real_number_line
+data Score = Lose | Score Number | Win
 
 derive instance eqScore ∷ Eq Score
-
-instance ordScore ∷ Ord Score where
-  compare Win _  = GT
-  compare Lose _ = LT
-  compare _ Win  = LT
-  compare _ Lose = GT
-  compare (Score x) (Score y) = compare x y
+derive instance ordScore ∷ Ord Score
 
 instance showScore ∷ Show Score where
   show Win       = "Win"
