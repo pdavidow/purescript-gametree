@@ -19,17 +19,17 @@ import Test.Unit.Assert (assert, equal)
 -- | the last coin(s) from the stack loses the game.
 data Player = Alice | Bob
 
-derive instance eqPlayer :: Eq Player
+derive instance eqPlayer ∷ Eq Player
 
-next :: Player -> Player
+next ∷ Player → Player
 next Alice = Bob
 next Bob = Alice
 
 data CoinsState = CoinsState Player Int
 
-derive instance eqCoinsState :: Eq CoinsState
+derive instance eqCoinsState ∷ Eq CoinsState
 
-instance nodeCoinsState :: Node CoinsState where
+instance nodeCoinsState ∷ Node CoinsState where
     isTerminal (CoinsState _ n) = n == 0
 
     -- In this case, it is sufficient to only define the score at the terminal
@@ -74,9 +74,9 @@ instance nodeCoinsState :: Node CoinsState where
 
 data Test = Root | A Int | B Int | C Int
 
-derive instance eqTest :: Eq Test
+derive instance eqTest ∷ Eq Test
 
-instance nodeTest :: Node Test where
+instance nodeTest ∷ Node Test where
   isTerminal (A 3) = true
   isTerminal (B 1) = true
   isTerminal (B 2) = true
@@ -99,13 +99,16 @@ instance nodeTest :: Node Test where
   children (B 3) = C 1 : C 2 : Nil
 
 main = runTest do
-  let result n = (minmax 1000 (CoinsState Alice n)).score
-      pv = (minmax 1000 (CoinsState Alice 4)).principalVariation
-
-      testResult = minmax 3 Root
+  test "Score" do
+    assert "Win should be the maximum value" (Win > Score 3.0)
+    assert "Win should be the maximum value" (Win > Lose)
+    assert "Lose should be the minimum value" (Score 3.0 > Lose)
 
   test "minmax" do
-    -- Search the full game tree
+    -- Coins game
+    let result n = (minmax 1000 (CoinsState Alice n)).score
+        pv = (minmax 1000 (CoinsState Alice 4)).principalVariation
+
     equal Win  (result 0)
     equal Lose (result 1)
     equal Win  (result 2)
@@ -120,6 +123,8 @@ main = runTest do
             Nil
 
     -- Test tree
+    let testResult = minmax 3 Root
+
     equal (Score 3.0) testResult.score
 
     assert "should find optimal strategy at 3-ply" $
@@ -127,6 +132,9 @@ main = runTest do
 
     assert "should find (seemingly) optimal strategy at 2-ply" $
       (Root :| A 3 : Nil) == (minmax 2 Root).principalVariation
+
+    assert "should return the best child node at 1-ply" $
+      (A 1 :| B 1 : Nil) == (minmax 1 (A 1)).principalVariation
 
     assert "should return the root node at 0-ply" $
       (Root :| Nil) == (minmax 0 Root).principalVariation

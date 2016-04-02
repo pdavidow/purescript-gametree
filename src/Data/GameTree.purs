@@ -9,6 +9,7 @@ module Data.GameTree
   , isTerminal
   , score
   , children
+  , isTerminalDefault
   , Result
   , minmax
   , bestMove
@@ -16,7 +17,7 @@ module Data.GameTree
 
 import Prelude
 
-import Data.List (List, (:))
+import Data.List (List, (:), null)
 import Data.List as List
 import Data.Maybe (Maybe)
 import Data.Maybe.Unsafe (fromJust)
@@ -25,31 +26,31 @@ import Data.Ord (comparing)
 import Data.NonEmpty (NonEmpty(..), singleton, tail)
 
 -- | `cons` for `NonEmpty List`s.
-consNE :: ∀ a. a -> NonEmpty List a -> NonEmpty List a
-consNE x (NonEmpty y ys) = NonEmpty x (y : ys)
+consNonEmpty ∷ ∀ a. a → NonEmpty List a → NonEmpty List a
+consNonEmpty x (NonEmpty y ys) = NonEmpty x (y : ys)
 
-infixr 5 consNE as :||
+infixr 5 consNonEmpty as <:>
 
 -- | The (heuristic) value of a node in the game tree. `Win` and `Lose` can be
 -- | thought of as *+infinity* and *-infinity*.
 data Score = Win | Lose | Score Number
 
-derive instance eqScore :: Eq Score
+derive instance eqScore ∷ Eq Score
 
-instance ordScore :: Ord Score where
+instance ordScore ∷ Ord Score where
   compare Win _  = GT
   compare Lose _ = LT
   compare _ Win  = LT
   compare _ Lose = GT
   compare (Score x) (Score y) = compare x y
 
-instance showScore :: Show Score where
+instance showScore ∷ Show Score where
   show Win       = "Win"
   show Lose      = "Lose"
   show (Score x) = "Score " <> show x
 
 -- | Negate a `Score`.
-negateScore :: Score -> Score
+negateScore ∷ Score → Score
 negateScore Win = Lose
 negateScore Lose = Win
 negateScore (Score x) = Score (negate x)
@@ -70,31 +71,61 @@ type Plies = Int
 -- |   isTerminal n == (null (children n))
 -- | ```
 class Node a where
-  isTerminal :: a -> Boolean
-  score :: a -> Score
-  children :: a -> List a
+  isTerminal ∷ a → Boolean
+  score      ∷ a → Score
+  children   ∷ a → List a
+
+-- | A default implementation for `isTerminal`.
+isTerminalDefault ∷ ∀ a. Node a ⇒ a → Boolean
+isTerminalDefault = null <<< children
 
 -- | The result of a game tree search. The principal variation is a list of
 -- | game states (including the root node) the would result in the given score.
-type Result a = { principalVariation :: NonEmpty List a, score :: Score }
+type Result a =
+  { principalVariation ∷ NonEmpty List a
+  , score ∷ Score }
+
+-- | Negates the score, if the first argument is `false`.
+signed ∷ Boolean → Score → Score
+signed true  = id
+signed false = negateScore
 
 -- | An implementation of a simple MinMax algorithm (in Negamax formulation).
 -- | Computes the principal variation and the best possible score for the
 -- | player who is about to make a move at the given root node.
-minmax :: ∀ a. Node a => Plies -> a -> Result a
+minmax ∷ ∀ a. Node a ⇒ Plies → a → Result a
 minmax plies rootNode = go plies true rootNode
   where
-    go :: Plies -> Boolean -> a -> Result a
-    go p max node
+    go ∷ Plies → Boolean → a → Result a
+    go p maximizing node
       | p == 0 || isTerminal node =
         { principalVariation: singleton node
-        , score: if max then score node else negateScore (score node) }
+        , score:              signed maximizing (score node)
+        }
       | otherwise =
-        { principalVariation: node :|| best.principalVariation
-        , score: negateScore best.score }
+        { principalVariation: node <:> best.principalVariation
+        , score:              negateScore best.score
+        }
       where
         best = fromJust $ minimumBy (comparing _.score)
-                                    (go (p - 1) (not max) <$> children node)
+                                    (go (p - 1) (not maximizing) <$> children node)
+
+alphaBeta ∷ ∀ a. Node a ⇒ Plies → a → Result a
+alphaBeta plies rootNode = go plies Lose Win true rootNode
+  where
+    go ∷ Plies → Score → Score → Boolean → a → Result a
+    go p alpha beta maximizing node
+      | p == 0 || isTerminal node =
+        { principalVariation: singleton node
+        , score:              signed maximizing (score node)
+        }
+      | otherwise =
+        { principalVariation: node <:> best.principalVariation
+        , score:              negateScore best.score
+        }
+      where
+        best = fromJust $ minimumBy (comparing _.score)
+                                    (go (p - 1) alpha beta (not maximizing) <$> children node)
 
 -- | Returns the child node that results from the best move from a given root
 -- | node in the game tree. Returns `Nothing` if the node is terminal.
@@ -103,5 +134,5 @@ minmax plies rootNode = go plies true rootNode
 -- | ``` purs
 -- | bestMove (minmax 3) rootNode
 -- | ```
-bestMove :: ∀ a. Node a => (a -> Result a) -> a -> Maybe a
+bestMove ∷ ∀ a. Node a ⇒ (a → Result a) → a → Maybe a
 bestMove search rootNode = List.head (tail (search rootNode).principalVariation)
