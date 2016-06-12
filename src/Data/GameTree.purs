@@ -17,13 +17,12 @@ module Data.GameTree
 
 import Prelude
 
+import Data.Foldable (minimumBy)
 import Data.List (List, (:), null)
 import Data.List as List
-import Data.Maybe (Maybe)
-import Data.Maybe.Unsafe (fromJust)
-import Data.Foldable (minimumBy)
-import Data.Ord (comparing)
+import Data.Maybe (Maybe, fromJust)
 import Data.NonEmpty (NonEmpty(..), singleton, tail)
+import Partial.Unsafe (unsafePartial)
 
 -- | `cons` for `NonEmpty List`s.
 consNonEmpty ∷ ∀ a. a → NonEmpty List a → NonEmpty List a
@@ -107,8 +106,9 @@ minmax plies rootNode = go plies true rootNode
         , score:              negateScore best.score
         }
       where
-        best = fromJust $ minimumBy (comparing _.score)
-                                    (go (p - 1) (not maximizing) <$> children node)
+        best = unsafePartial $ fromJust $
+                  minimumBy (comparing _.score)
+                            (go (p - 1) (not maximizing) <$> children node)
 
 alphaBeta ∷ ∀ a. Node a ⇒ Plies → a → Result a
 alphaBeta plies rootNode = go plies Lose Win true rootNode
@@ -124,8 +124,9 @@ alphaBeta plies rootNode = go plies Lose Win true rootNode
         , score:              negateScore best.score
         }
       where
-        best = fromJust $ minimumBy (comparing _.score)
-                                    (go (p - 1) alpha beta (not maximizing) <$> children node)
+        best = unsafePartial $ fromJust $
+                   minimumBy (comparing _.score)
+                             (go (p - 1) alpha beta (not maximizing) <$> children node)
 
 -- | Returns the child node that results from the best move from a given root
 -- | node in the game tree. Returns `Nothing` if the node is terminal.

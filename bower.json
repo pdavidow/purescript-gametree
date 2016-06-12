@@ -11,10 +11,10 @@
     "test"
   ],
   "dependencies": {
-    "purescript-lists": "^0.7.10",
-    "purescript-foldable-traversable": "^0.4.2",
-    "purescript-orders": "^0.1.1",
-    "purescript-nonempty": "^0.2.0"
+    "purescript-lists": "^1.0.0",
+    "purescript-foldable-traversable": "^1.0.0",
+    "purescript-orders": "https://github.com/purescript/purescript-orders.git",
+    "purescript-nonempty": "^1.0.0"
   },
   "devDependencies": {
     "purescript-test-unit": "^4.1.0"
