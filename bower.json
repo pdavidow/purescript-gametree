@@ -13,10 +13,10 @@
   "dependencies": {
     "purescript-lists": "^1.0.0",
     "purescript-foldable-traversable": "^1.0.0",
-    "purescript-orders": "https://github.com/purescript/purescript-orders.git",
+    "purescript-orders": "^1.0.0",
     "purescript-nonempty": "^1.0.0"
   },
   "devDependencies": {
-    "purescript-test-unit": "^4.1.0"
+    "purescript-test-unit": "^9.0.0"
   }
 }

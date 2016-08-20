@@ -2,15 +2,20 @@ module Test.Main where
 
 import Prelude
 
+import Control.Monad.Eff (Eff)
+import Control.Monad.Eff.Console (CONSOLE)
+import Control.Monad.Aff.AVar (AVAR)
+
 import Data.List (List(..), (..), (:))
 import Data.Maybe (Maybe(..))
 import Data.NonEmpty ((:|))
-import Data.Ord (min)
 
 import Data.GameTree (class Node, Score(..), minmax, bestMove)
 
-import Test.Unit (test, runTest)
-import Test.Unit.Assert (assert, equal)
+import Test.Unit (test)
+import Test.Unit.Assert (equal, assert)
+import Test.Unit.Main (runTest)
+import Test.Unit.Console (TESTOUTPUT)
 
 -- Coins game -----------------------------------------------------------------
 
@@ -29,13 +34,17 @@ data CoinsState = CoinsState Player Int
 
 derive instance eqCoinsState ∷ Eq CoinsState
 
+foreign import undefined ∷ ∀ a. a
+
 instance nodeCoinsState ∷ Node CoinsState where
     isTerminal (CoinsState _ n) = n == 0
 
     -- In this case, it is sufficient to only define the score at the terminal
     -- nodes with zero coins, because we search the tree to the lowest depth.
-    score (CoinsState Alice n) | n == 0 = Win
-    score (CoinsState Bob   n) | n == 0 = Lose
+    score (CoinsState Alice n) | n == 0    = Win
+                               | otherwise = undefined
+    score (CoinsState Bob   n) | n == 0    = Lose
+                               | otherwise = undefined
 
     children (CoinsState pl n) = do
       taken <- 1 .. min 3 n
@@ -92,12 +101,15 @@ instance nodeTest ∷ Node Test where
   score (B 4) = Score 4.0
   score (C 1) = Score 3.0
   score (C 2) = Lose
+  score _     = undefined
 
   children Root = A 1 : A 2 : A 3 : Nil
   children (A 1) = B 1 : B 2 : Nil
   children (A 2) = B 3 : B 4 : Nil
   children (B 3) = C 1 : C 2 : Nil
+  children _ = undefined
 
+main :: ∀ eff. Eff (console :: CONSOLE, testOutput :: TESTOUTPUT, avar :: AVAR | eff) Unit
 main = runTest do
   test "Score" do
     assert "Win should be the maximum value" (Win > Score 3.0)
