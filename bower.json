@@ -4,6 +4,10 @@
     "David Peter <mail@david-peter.de>"
   ],
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/sharkdp/purescript-gametree.git"
+  },
   "ignore": [
     "**/.*",
     "bower_components",
