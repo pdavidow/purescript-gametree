@@ -79,7 +79,8 @@ isTerminalDefault ∷ ∀ a. Node a ⇒ a → Boolean
 isTerminalDefault = null <<< children
 
 -- | The result of a game tree search. The principal variation is a list of
--- | game states (including the root node) the would result in the given score.
+-- | game states (including the root node) that would result in the given
+-- | score.
 type Result a =
   { principalVariation ∷ NonEmpty List a
   , score ∷ Score }
