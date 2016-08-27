@@ -61,13 +61,13 @@ type Plies = Int
 -- | `isTerminal` returns `true` if the node refers to a game state that is
 -- | either a win, a lose, or a draw. The `score` of a node is the (heuristic)
 -- | value of the given node and is always defined from the viewpoint of
--- | the 'first' player (the one who calls the search algorithm). Finally,
+-- | the 'first' player (the one that calls the search algorithm). Finally,
 -- | `children` returns a list of game states that can be reached through valid
 -- | moves.
 -- |
 -- | Law:
 -- | ``` purs
--- |   isTerminal n == (null (children n))
+-- |   isTerminal n == null (children n)
 -- | ```
 class Node a where
   isTerminal ∷ a → Boolean
@@ -90,9 +90,9 @@ signed ∷ Boolean → Score → Score
 signed true  = id
 signed false = negateScore
 
--- | An implementation of a simple MinMax algorithm (in Negamax formulation).
+-- | An implementation of the MinMax algorithm (in Negamax formulation).
 -- | Computes the principal variation and the best possible score for the
--- | player who is about to make a move at the given root node.
+-- | player that is about to make a move at the given root node.
 minmax ∷ ∀ a. Node a ⇒ Plies → a → Result a
 minmax plies rootNode = go plies true rootNode
   where
