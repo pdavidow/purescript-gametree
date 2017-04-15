@@ -15,12 +15,12 @@
     "test"
   ],
   "dependencies": {
-    "purescript-lists": "^3.0.0",
-    "purescript-foldable-traversable": "^2.0.0",
-    "purescript-orders": "^2.0.0",
-    "purescript-nonempty": "^3.0.0"
+    "purescript-lists": "^4.0.1",
+    "purescript-foldable-traversable": "^3.0.0",
+    "purescript-orders": "^3.0.0",
+    "purescript-nonempty": "^4.0.0"
   },
   "devDependencies": {
-    "purescript-test-unit": "^10.0.0"
+    "purescript-test-unit": "^11.0.0"
   }
 }
