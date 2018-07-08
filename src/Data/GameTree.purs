@@ -11,6 +11,7 @@ module Data.GameTree
   , children
   , isTerminalDefault
   , Result
+  , alphaBeta
   , minmax
   , bestMove
   ) where
